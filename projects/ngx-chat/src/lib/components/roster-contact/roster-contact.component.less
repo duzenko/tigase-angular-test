@@ -1,0 +1,64 @@
+@import '../../style';
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Helvetica", "Arial", serif
+}
+
+.roster-contact {
+  display: flex;
+  justify-content: space-between;
+}
+
+.roster-contact-avatar {
+  min-width: 2em;
+  width: 2em;
+  min-height: 2em;
+  height: 2em;
+}
+
+.roster-contact-name {
+  padding-left: 0.5em;
+  padding-top: 0.5em;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  flex-grow: 1;
+}
+
+.roster-contact-status {
+  white-space: nowrap;
+}
+
+.roster-presence {
+  display: inline-block;
+  padding-top: 0.5em;
+  margin-left: 0.3em;
+
+  &.roster-presence--present {
+    color: @success;
+  }
+
+  &.roster-presence--away {
+    color: @warning;
+  }
+
+  &.roster-presence--unavailable {
+    color: transparent;
+  }
+}
+
+.unread-message-badge {
+  display: inline-block;
+  padding-top: 0.2em;
+  background-color: #ff5940;
+  color: #fff;
+  border-radius: 50%;
+  align-self: center;
+  margin-top: 0.25em;
+  width: 1.5em;
+  height: 1.5em;
+  text-align: center;
+}

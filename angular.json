@@ -120,6 +120,76 @@
           }
         }
       }
+    },
+    "test-lib": {
+      "projectType": "library",
+      "root": "projects/test-lib",
+      "sourceRoot": "projects/test-lib/src",
+      "prefix": "tl",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/test-lib/tsconfig.lib.json",
+            "project": "projects/test-lib/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/test-lib/src/test.ts",
+            "tsConfig": "projects/test-lib/tsconfig.spec.json",
+            "karmaConfig": "projects/test-lib/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/test-lib/tsconfig.lib.json",
+              "projects/test-lib/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
+    },
+    "ngx-chat": {
+      "projectType": "library",
+      "root": "projects/ngx-chat",
+      "sourceRoot": "projects/ngx-chat/src",
+      "prefix": "t2",
+      "architect": {
+        "build": {
+          "builder": "@angular-devkit/build-ng-packagr:build",
+          "options": {
+            "tsConfig": "projects/ngx-chat/tsconfig.lib.json",
+            "project": "projects/ngx-chat/ng-package.json"
+          }
+        },
+        "test": {
+          "builder": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "projects/ngx-chat/src/test.ts",
+            "tsConfig": "projects/ngx-chat/tsconfig.spec.json",
+            "karmaConfig": "projects/ngx-chat/karma.conf.js"
+          }
+        },
+        "lint": {
+          "builder": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "projects/ngx-chat/tsconfig.lib.json",
+              "projects/ngx-chat/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**"
+            ]
+          }
+        }
+      }
     }},
   "defaultProject": "test-app"
 }
