@@ -21,7 +21,9 @@
     "@angular/platform-browser-dynamic": "~10.0.8",
     "@angular/router": "~10.0.8",
     "@types/ltx": "^2.6.3",
+    "@xmpp-plugins/roster": "^1.2.0",
     "@xmpp/client": "^0.9.2",
+    "ng-chat": "^3.0.3",
     "rxjs": "^6.5.4",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.3"
