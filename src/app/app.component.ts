@@ -5,11 +5,12 @@ import { TestLibService } from 'projects/test-lib/src/public-api';
 const { client, xml } = require( "@xmpp/client" );
 import setupRoster from "@xmpp-plugins/roster"
 import { ChatAdapter, ChatParticipantStatus, ChatParticipantType, Message, ParticipantResponse } from 'ng-chat';
-import { from, Observable } from 'rxjs';
+import { from, Observable, of } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
 class MyAdapter extends ChatAdapter {
 	roster;
+	contacts: ParticipantResponse[];
 	
 	constructor(private xmpp) {
 		super();
@@ -17,11 +18,28 @@ class MyAdapter extends ChatAdapter {
 		this.roster.on( 'set', ( { item, version } ) => {
 			console.log( `Roster version ${version} received`, item )
 		} )
+		xmpp.on( "stanza", async ( stanza ) => {
+			if ( stanza.is( "message" ) ) {
+				this.messageReceived( stanza );
+				// await xmpp.send( xml( "presence", { type: "unavailable" } ) );
+				// await xmpp.stop();
+			}
+		} );
+	}
+
+	messageReceived( stanza ) {
+		let replyMessage = new Message();
+		replyMessage.message = stanza.getChild( 'body' ).text();
+		replyMessage.dateSent = new Date();
+		const to = stanza.attrs.from.split( '@' )[0];
+		console.log( to, replyMessage.message)
+		const p = this.contacts.find( x => x.participant.id === to );
+		this.messageReceivedHandler( p.participant, replyMessage );
 	}
 
 	listFriends(): Observable<ParticipantResponse[]> {
 		return from( this.roster.get() as Promise<any> ).pipe(
-			tap( console.log ),
+			// tap( console.log ),
 			map( ( a: any ) => a.items.map( x => {
 				const pr = new ParticipantResponse();
 				pr.participant = {
@@ -32,16 +50,21 @@ class MyAdapter extends ChatAdapter {
 					status: ChatParticipantStatus.Online,
 				};
 				return pr;
-			} )),
+			} ) ),
+			tap(x=>this.contacts = x),
 		);
-		// console.log( items )
-		throw new Error( 'Method not implemented.' );
 	}
 	getMessageHistory( destinataryId: any ): Observable<Message[]> {
-		throw new Error( 'Method not implemented.' );
+		return of([]);
 	}
 	sendMessage( message: Message ): void {
-		throw new Error( 'Method not implemented.' );
+		// Sends a chat message to itself
+		const m = xml(
+			message.message,
+			{ type: "chat", to: message.toId },
+			xml( "body", {}, "hello world" ),
+		);
+		this.xmpp.send( m );
 	}
 }
 
@@ -78,26 +101,18 @@ export class AppComponent {
 			console.log( "offline" );
 		} );
 
-		xmpp.on( "stanza", async ( stanza ) => {
-			if ( stanza.is( "message" ) ) {
-				// await xmpp.send( xml( "presence", { type: "unavailable" } ) );
-				// await xmpp.stop();
-			}
-		} );
+		// xmpp.on( "stanza", async ( stanza ) => {
+		// 	if ( stanza.is( "message" ) ) {
+		// 		console.log('message', stanza)
+		// 		// await xmpp.send( xml( "presence", { type: "unavailable" } ) );
+		// 		// await xmpp.stop();
+		// 	}
+		// } );
 
 		xmpp.on( "online", async ( address ) => {
 			console.log( "online" );
 			// Makes itself available
 			await xmpp.send( xml( "presence" ) );
-
-			// Sends a chat message to itself
-			// const message = xml(
-			// 	"message",
-			// 	{ type: "chat", to: address },
-			// 	xml( "body", {}, "hello world" ),
-			// );
-			// await xmpp.send( message );
-
 			this.adapter = new MyAdapter(xmpp);
 
 		} );
